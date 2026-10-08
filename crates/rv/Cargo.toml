@@ -1,0 +1,9 @@
+[package]
+name = "rv"
+version = "0.1.0"
+edition = "2021"
+authors = ["Philippe Anel <philippe@dremml.com>"]
+license = "MIT"
+description = "A RISC-V (RV64GC, RVV 1.0, BF16) run-time assembler and decoder: the a64 of herbert's riscv64 target"
+
+[dependencies]

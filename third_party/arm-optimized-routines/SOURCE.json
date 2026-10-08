@@ -1,0 +1,27 @@
+{
+  "repository": "https://github.com/ARM-software/optimized-routines",
+  "commit": "22bc70e01a192aaeac161143353315f051f3e647",
+  "license_choice": "MIT",
+  "files": [
+    {
+      "name": "LICENSE",
+      "sha256": "650afbf29f214451e02241adc42534e82c9d6ae2b38e2444b92b5a1ffcaf9346"
+    },
+    {
+      "name": "math/expf.c",
+      "sha256": "bf34b67b817ad7382179afd8d52c2afc076965ee9aa01c9b6606a0f9b51a4996"
+    },
+    {
+      "name": "math/logf.c",
+      "sha256": "f12013b42b8c73f6879cd9b83364bd859812c17fb0b432605666aea267723e0f"
+    },
+    {
+      "name": "math/exp2f_data.c",
+      "sha256": "b8974df5886979f7bdd0fd83b0b7453786b9f715d36e593174ab94f0f9438d71"
+    },
+    {
+      "name": "math/logf_data.c",
+      "sha256": "5262907466c069677dd0690de5d1919a31c72fef5f57aa78e217a94b389494af"
+    }
+  ]
+}

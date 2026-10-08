@@ -1,0 +1,53 @@
+[workspace]
+members = [".", "crates/a64", "crates/rv"]
+
+[package]
+name = "herbert-bf16"
+version = "0.1.0"
+edition = "2021"
+authors = ["Philippe Anel <philippe@dremml.com>"]
+license = "MIT"
+description = "Qwen3.5-4B in bf16, no quantization, every kernel JIT-emitted — one main that runs a multi-turn chat"
+# Supported targets: x86_64 Linux and Windows (iced-x86 emits AVX2/AVX-512), aarch64
+# macOS (crates/a64 emits NEON/BF16), riscv64 Linux (crates/rv emits RVV); build.rs and
+# src/lib.rs refuse the rest.
+build = "build.rs"
+
+[lib]
+name = "herbert_bf16"
+path = "src/lib.rs"
+
+[[bin]]
+name = "herbert-bf16-chat"
+path = "src/main.rs"
+
+[features]
+# Back the packed weights with 2 MiB pages (Linux MAP_HUGETLB); falls back to
+# ordinary pages when the machine has none reserved.
+hugepages = []
+
+[dependencies]
+memmap2 = "0.9"
+libc = "0.2"
+safetensors = "0.4.3"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+half = { version = "2.3", features = ["serde"] }
+thiserror = "1.0"
+tokenizers = { version = "0.22.2", default-features = false, features = ["fancy-regex"] }
+
+# The emitter of each target: iced-x86 for x86-64, the a64 crate of this workspace for
+# AArch64, the rv crate for RISC-V.
+[target.'cfg(target_arch = "x86_64")'.dependencies]
+iced-x86 = { version = "1.21.0", features = ["code_asm", "decoder", "nasm"] }
+
+[target.'cfg(target_arch = "aarch64")'.dependencies]
+a64 = { path = "crates/a64" }
+
+[target.'cfg(target_arch = "riscv64")'.dependencies]
+rv = { path = "crates/rv" }
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1

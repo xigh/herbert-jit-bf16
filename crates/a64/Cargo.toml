@@ -1,0 +1,9 @@
+[package]
+name = "a64"
+version = "0.1.0"
+edition = "2021"
+authors = ["Philippe Anel <philippe@dremml.com>"]
+license = "MIT"
+description = "An AArch64 (ARMv8/ARMv9) run-time assembler and decoder: the iced-x86 of herbert's ARM target — integer, NEON, BF16, SME2"
+
+[dependencies]
