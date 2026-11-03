@@ -78,6 +78,9 @@ impl Sampler {
             entry.0 = (entry.0 - best).exp();
             total += entry.0;
         }
+        if !total.is_finite() || total <= 0.0 {
+            return argmax;
+        }
         for entry in &mut self.scratch {
             entry.0 /= total;
         }
@@ -120,5 +123,39 @@ impl Sampler {
         self.state = s;
         let bits = s.wrapping_mul(0x2545_F491_4F6C_DD1D) >> 40;
         bits as f32 / (1u64 << 24) as f32
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn bf16(x: f32) -> u16 {
+        (x.to_bits() >> 16) as u16
+    }
+
+    /// 1000 tokens, token 7 the clear favourite.
+    fn logits() -> Vec<f32> {
+        let mut l: Vec<f32> = (0..1000).map(|i| 8.0 - i as f32 * 0.01).collect();
+        l[7] = 12.0;
+        l
+    }
+
+    fn choose(temperature: f32, l: &[f32]) -> u32 {
+        let mut config = Sampling::qwen_thinking(42);
+        config.temperature = temperature;
+        let row: Vec<u16> = l.iter().map(|&x| bf16(x)).collect();
+        Sampler::new(config).choose(7, &row)
+    }
+
+    #[test]
+    fn non_finite_softmax_falls_back_to_argmax() {
+        assert_eq!(choose(0.6, &logits()), 7);
+        for t in [3e-38, 1e-39, f32::NAN] {
+            assert_eq!(choose(t, &logits()), 7, "T = {t:e}");
+        }
+        let mut l = logits();
+        l[7] = f32::INFINITY;
+        assert_eq!(choose(0.6, &l), 7, "+inf logit");
     }
 }

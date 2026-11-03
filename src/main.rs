@@ -119,6 +119,9 @@ fn parse(args: &[String]) -> Result<Options, String> {
             "--ask" => o.asks.push(value()?),
             "--temperature" => {
                 let t: f32 = value()?.parse().map_err(|e| format!("--temperature: {e}"))?;
+                if !t.is_finite() || t < 0.0 {
+                    return Err(format!("--temperature: a finite value >= 0, not {t}"));
+                }
                 o.sampling = Sampling::qwen_thinking(42);
                 o.sampling.temperature = t;
             }
